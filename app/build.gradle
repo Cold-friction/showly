@@ -31,24 +31,24 @@ android {
     minSdkVersion versions.minSdk
     targetSdkVersion versions.targetSdk
     compileSdkVersion versions.compileSdk
-    compileSdkVersion versions.compileSdk
     versionCode versions.versionCode
     versionName versions.versionName
+
+    buildConfigField "String", "TMDB_API_KEY", "\"${System.getenv("TMDB_API_KEY")}\""
+    buildConfigField "String", "TRAKT_CLIENT_ID", "\"${System.getenv("TRAKT_CLIENT_ID")}\""
+    buildConfigField "String", "TRAKT_CLIENT_SECRET", "\"${System.getenv("TRAKT_CLIENT_SECRET")}\""
+    buildConfigField "String", "OMDB_API_KEY", "\"${System.getenv("OMDB_API_KEY")}\""
 
     resourceConfigurations += ['en', 'ar', 'de', 'da', 'es', 'fi', 'fr', 'it', 'pl', 'pt', 'ru', 'tr', 'zh', 'uk']
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   signingConfigs {
-    def keystorePropertiesFile = rootProject.file("app/keystore.properties")
-    def keystoreProperties = new Properties()
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
     release {
-      storeFile file("keystore")
-      storePassword keystoreProperties['storePassword']
-      keyAlias keystoreProperties['keyAlias']
-      keyPassword keystoreProperties['keyPassword']
+      storeFile new File(rootDir, "app/keystore.jks")
+      storePassword System.getenv("KEYSTORE_PASSWORD")
+      keyAlias System.getenv("KEY_ALIAS")
+      keyPassword System.getenv("KEY_PASSWORD")
     }
   }
 
@@ -78,11 +78,8 @@ android {
     checkReleaseBuilds false
   }
 
-  // https://github.com/michaldrabik/showly-2.0/issues/46#issuecomment-2324619155
   dependenciesInfo {
-    // Disables dependency metadata when building APKs.
     includeInApk = false
-    // Disables dependency metadata when building Android App Bundles.
     includeInBundle = false
   }
 
@@ -126,6 +123,5 @@ dependencies {
   testImplementation libs.bundles.testing
   androidTestImplementation libs.android.test.runner
 
-  //  debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
   coreLibraryDesugaring libs.android.desugar
 }
